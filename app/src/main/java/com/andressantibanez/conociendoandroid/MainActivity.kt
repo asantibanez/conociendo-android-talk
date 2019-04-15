@@ -16,6 +16,15 @@ class MainActivity : AppCompatActivity() {
     var confirmButton: Button? = null
     var cancelButton: Button? = null
 
+    var balance: Double = 0.0
+    var balanceLoaded: Boolean = false
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putBoolean("balance_loaded", balanceLoaded)
+        outState?.putDouble("balance", balance)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,24 +36,36 @@ class MainActivity : AppCompatActivity() {
         confirmButton = findViewById(R.id.confirm)
         cancelButton = findViewById(R.id.cancel)
 
+        if (savedInstanceState != null) {
+            balanceLoaded = savedInstanceState.getBoolean("balance_loaded")
+            balance = savedInstanceState.getDouble("balance")
+        }
+
         // Start
-        Thread(Runnable {
-            runOnUiThread {
-                confirmButton?.visibility = View.GONE
-                cancelButton?.visibility = View.GONE
-                progressBar?.visibility = View.VISIBLE
-            }
+        if (!balanceLoaded) {
+            Thread(Runnable {
+                runOnUiThread {
+                    confirmButton?.visibility = View.GONE
+                    cancelButton?.visibility = View.GONE
+                    progressBar?.visibility = View.VISIBLE
+                }
 
-            sleep(5000)
+                sleep(5000)
 
-            runOnUiThread {
-                balanceView?.text = "$ 4,500"
+                balance = 4500.0
+                balanceLoaded = true
 
-                confirmButton?.visibility = View.VISIBLE
-                cancelButton?.visibility = View.VISIBLE
-                progressBar?.visibility = View.GONE
-            }
-        }).start()
+                runOnUiThread {
+                    balanceView?.text = "$ $balance"
+
+                    confirmButton?.visibility = View.VISIBLE
+                    cancelButton?.visibility = View.VISIBLE
+                    progressBar?.visibility = View.GONE
+                }
+            }).start()
+        } else {
+            balanceView?.text = "$ $balance"
+        }
 
 
         // Confirm
@@ -63,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     cancelButton?.visibility = View.VISIBLE
                     progressBar?.visibility = View.GONE
 
-                    balanceView?.text = " $ 4,500 - X"
+                    balanceView?.text = " $ $balance - X"
                     Toast.makeText(this, "Transferencia Realizada", Toast.LENGTH_LONG).show()
                 }
             }).start()
