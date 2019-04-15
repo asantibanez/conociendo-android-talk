@@ -18,7 +18,9 @@ class MainActivity : AppCompatActivity() {
         sayByeButton.setOnClickListener {
             Thread(Runnable {
                 sleep(3000)
-                message.text = "Say Bye!"
+                runOnUiThread {
+                    message.text = "Say Bye!"
+                }
             }).start()
         }
     }
