@@ -1,32 +1,30 @@
 package com.andressantibanez.conociendoandroid
 
+import android.databinding.DataBindingUtil
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import com.andressantibanez.conociendoandroid.databinding.ActivityMainBinding
 import io.kimo.lib.faker.Faker
 import io.kimo.lib.faker.component.text.NameComponent
 
 class MainActivity : AppCompatActivity() {
 
-    var firstNameView: TextView? = null
-    var lastNameView: TextView? = null
-    var occupationView: TextView? = null
-    var changeButton: Button? = null
+    var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        firstNameView = findViewById(R.id.firstName)
-        lastNameView = findViewById(R.id.lastName)
-        occupationView = findViewById(R.id.occupation)
-        changeButton = findViewById(R.id.change)
+        binding?.viewState = MainActivityViewState()
 
-        changeButton?.setOnClickListener {
-            firstNameView?.text = NameComponent(this).firstName()
-            lastNameView?.text = NameComponent(this).lastName()
-            occupationView?.text = NameComponent(this).title()
+        binding?.change?.setOnClickListener {
+            binding?.viewState = MainActivityViewState(
+                firstName = NameComponent(this).firstName(),
+                lastName = NameComponent(this).lastName(),
+                occupation = NameComponent(this).title()
+            )
         }
     }
 }
